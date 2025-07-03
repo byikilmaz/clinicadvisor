@@ -91,28 +91,59 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Responsive breakpoints
+  bool _isMobile(double width) => width < 768;
+  bool _isTablet(double width) => width >= 768 && width < 1024;
+  bool _isDesktop(double width) => width >= 1024 && width < 1440;
+  bool _isLargeDesktop(double width) => width >= 1440;
+
+  // Responsive values
+  double _getResponsivePadding(double width) {
+    if (_isMobile(width)) return 16;
+    if (_isTablet(width)) return 24;
+    if (_isDesktop(width)) return 32;
+    return 48; // Large desktop
+  }
+
+  double _getResponsiveFontSize(double width, double baseFontSize) {
+    if (_isMobile(width)) return baseFontSize;
+    if (_isTablet(width)) return baseFontSize * 1.1;
+    if (_isDesktop(width)) return baseFontSize * 1.2;
+    return baseFontSize * 1.3; // Large desktop
+  }
+
+  double _getFormMaxWidth(double width) {
+    if (_isMobile(width)) return double.infinity;
+    if (_isTablet(width)) return 400;
+    if (_isDesktop(width)) return 450;
+    return 500; // Large desktop
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final isMobile = screenWidth < 768;
     
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-        child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
+        child: _isMobile(screenWidth) 
+            ? _buildMobileLayout(screenWidth) 
+            : _buildDesktopLayout(screenWidth),
       ),
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    
     return SingleChildScrollView(
       child: Column(
         children: [
           // Header with close button
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             child: Row(
               children: [
                 IconButton(
@@ -123,20 +154,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'ClinicAdvisor',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: _getResponsiveFontSize(screenWidth, 18),
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
                 const Spacer(),
-                const SizedBox(width: 48), // Balance the close button
+                const SizedBox(width: 48),
               ],
             ),
           ),
           
           // Hero Section
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: EdgeInsets.symmetric(
+              horizontal: padding, 
+              vertical: padding * 1.5,
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -151,36 +185,36 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Icon(
                   Icons.local_hospital,
-                  size: 60,
+                  size: _getResponsiveFontSize(screenWidth, 60),
                   color: AppColors.white,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: padding),
                 Text(
                   'Hoş Geldiniz!',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: _getResponsiveFontSize(screenWidth, 28),
                     fontWeight: FontWeight.bold,
                     color: AppColors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: padding / 2),
                 Text(
                   'Binlerce klinik arasından size en uygun olanı bulmaya devam edin',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getResponsiveFontSize(screenWidth, 16),
                     color: AppColors.white.withOpacity(0.9),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: padding),
                 
                 // Trust indicators
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildTrustBadge('500+', 'Klinik'),
-                    _buildTrustBadge('50K+', 'Hasta'),
-                    _buildTrustBadge('4.8★', 'Puan'),
+                    _buildTrustBadge('500+', 'Klinik', screenWidth),
+                    _buildTrustBadge('50K+', 'Hasta', screenWidth),
+                    _buildTrustBadge('4.8★', 'Puan', screenWidth),
                   ],
                 ),
               ],
@@ -189,132 +223,168 @@ class _LoginScreenState extends State<LoginScreen> {
           
           // Form Section
           Container(
-            padding: const EdgeInsets.all(24),
-            child: _buildLoginForm(),
+            padding: EdgeInsets.all(padding),
+            constraints: BoxConstraints(
+              maxWidth: _getFormMaxWidth(screenWidth),
+            ),
+            child: _buildLoginForm(screenWidth),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        // Left side - Visual content
-        Expanded(
-          flex: 3,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primary,
-                  AppColors.secondary,
-                ],
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(48),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.local_hospital,
-                    size: 80,
-                    color: AppColors.white,
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'Türkiye\'nin En Büyük\nSağlık Pazaryeri',
-                    style: TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Binlerce klinik arasından size en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: AppColors.white.withOpacity(0.9),
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  
-                  // Benefits
-                  Column(
-                    children: [
-                      _buildBenefit('Güvenilir klinikler ve doktorlar'),
-                      _buildBenefit('Şeffaf fiyat karşılaştırması'),
-                      _buildBenefit('Kolay randevu alma sistemi'),
-                      _buildBenefit('Gerçek hasta yorumları'),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 48),
-                  
-                  // Stats
-                  Row(
-                    children: [
-                      _buildStatItem('500+', 'Klinik'),
-                      const SizedBox(width: 32),
-                      _buildStatItem('1000+', 'Doktor'),
-                      const SizedBox(width: 32),
-                      _buildStatItem('50K+', 'Hasta'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+  Widget _buildDesktopLayout(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    final isUltraWide = _isLargeDesktop(screenWidth);
+    
+    return Center(
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: isUltraWide ? 1600 : 1200,
+          maxHeight: 900,
         ),
-        
-        // Right side - Login form
-        Expanded(
-          flex: 2,
-          child: Container(
-            color: AppColors.white,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(48),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Giriş Yapın',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+        margin: EdgeInsets.symmetric(
+          horizontal: padding,
+          vertical: padding / 2,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: [
+            // Left side - Visual content
+            Expanded(
+              flex: _isTablet(screenWidth) ? 1 : 3,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary,
+                      AppColors.secondary,
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(padding),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.local_hospital,
+                        size: _getResponsiveFontSize(screenWidth, 80),
+                        color: AppColors.white,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Hesabınıza giriş yaparak devam edin',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.grey,
+                      SizedBox(height: padding),
+                      Text(
+                        'Türkiye\'nin En Büyük\nSağlık Pazaryeri',
+                        style: TextStyle(
+                          fontSize: _getResponsiveFontSize(screenWidth, 42),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 48),
-                    _buildLoginForm(),
-                  ],
+                      SizedBox(height: padding / 1.5),
+                      Text(
+                        'Binlerce klinik arasından size en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.',
+                        style: TextStyle(
+                          fontSize: _getResponsiveFontSize(screenWidth, 18),
+                          color: AppColors.white.withOpacity(0.9),
+                          height: 1.6,
+                        ),
+                      ),
+                      SizedBox(height: padding * 1.5),
+                      
+                      // Benefits - Hide on tablet for space
+                      if (!_isTablet(screenWidth)) ...[
+                        Column(
+                          children: [
+                            _buildBenefit('Güvenilir klinikler ve doktorlar', screenWidth),
+                            _buildBenefit('Şeffaf fiyat karşılaştırması', screenWidth),
+                            _buildBenefit('Kolay randevu alma sistemi', screenWidth),
+                            _buildBenefit('Gerçek hasta yorumları', screenWidth),
+                          ],
+                        ),
+                        SizedBox(height: padding * 1.5),
+                      ],
+                      
+                      // Stats
+                      Wrap(
+                        spacing: padding,
+                        runSpacing: padding / 2,
+                        children: [
+                          _buildStatItem('500+', 'Klinik', screenWidth),
+                          _buildStatItem('1000+', 'Doktor', screenWidth),
+                          _buildStatItem('50K+', 'Hasta', screenWidth),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
+            
+            // Right side - Login form
+            Expanded(
+              flex: _isTablet(screenWidth) ? 1 : 2,
+              child: Container(
+                color: AppColors.white,
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(padding),
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: _getFormMaxWidth(screenWidth),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Giriş Yapın',
+                            style: TextStyle(
+                              fontSize: _getResponsiveFontSize(screenWidth, 32),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          SizedBox(height: padding / 4),
+                          Text(
+                            'Hesabınıza giriş yaparak devam edin',
+                            style: TextStyle(
+                              fontSize: _getResponsiveFontSize(screenWidth, 16),
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          SizedBox(height: padding * 1.5),
+                          _buildLoginForm(screenWidth),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildLoginForm() {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildLoginForm(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    final fontSize = _getResponsiveFontSize(screenWidth, 16);
     
     return Form(
       key: _formKey,
@@ -334,6 +404,7 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Email Adresi',
                 hintText: 'ornek@email.com',
@@ -351,13 +422,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -372,7 +443,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           
-          const SizedBox(height: 20),
+          SizedBox(height: padding),
           
           // Password field
           Container(
@@ -387,6 +458,7 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _passwordController,
               obscureText: _obscurePassword,
               textInputAction: TextInputAction.done,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Şifre',
                 hintText: 'En az 6 karakter',
@@ -413,13 +485,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -435,7 +507,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           
-          const SizedBox(height: 12),
+          SizedBox(height: padding / 2),
           
           // Forgot password
           Align(
@@ -447,16 +519,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
+                  fontSize: fontSize - 2,
                 ),
               ),
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding),
           
           // Login button
           Container(
-            height: 56,
+            height: _isMobile(screenWidth) ? 56 : 64,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [AppColors.primary, AppColors.secondary],
@@ -492,14 +565,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Giriş Yap',
                       style: TextStyle(
                         color: AppColors.white,
-                        fontSize: 18,
+                        fontSize: _getResponsiveFontSize(screenWidth, 18),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding),
           
           // Divider
           Row(
@@ -510,12 +583,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: padding),
                 child: Text(
                   'veya',
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 14,
+                    fontSize: fontSize - 2,
                   ),
                 ),
               ),
@@ -527,11 +600,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding),
           
           // Register link
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: AppColors.grey.withOpacity(0.05),
               borderRadius: BorderRadius.circular(16),
@@ -546,7 +619,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Hesabınız yok mu? ',
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 16,
+                    fontSize: fontSize,
                   ),
                 ),
                 GestureDetector(
@@ -561,7 +634,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Hemen Kaydolun',
                     style: TextStyle(
                       color: AppColors.primary,
-                      fontSize: 16,
+                      fontSize: fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -570,7 +643,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: padding),
           
           // Trust indicators at bottom
           Text(
@@ -578,7 +651,7 @@ class _LoginScreenState extends State<LoginScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.grey,
-              fontSize: 12,
+              fontSize: fontSize - 4,
             ),
           ),
         ],
@@ -586,9 +659,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTrustBadge(String number, String label) {
+  Widget _buildTrustBadge(String number, String label, double screenWidth) {
+    final fontSize = _getResponsiveFontSize(screenWidth, 16);
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: _isMobile(screenWidth) ? 12 : 16, 
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
         color: AppColors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(20),
@@ -600,14 +678,14 @@ class _LoginScreenState extends State<LoginScreen> {
             style: TextStyle(
               color: AppColors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: fontSize,
             ),
           ),
           Text(
             label,
             style: TextStyle(
               color: AppColors.white.withOpacity(0.8),
-              fontSize: 10,
+              fontSize: fontSize - 6,
             ),
           ),
         ],
@@ -615,9 +693,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildBenefit(String text) {
+  Widget _buildBenefit(String text, double screenWidth) {
+    final fontSize = _getResponsiveFontSize(screenWidth, 16);
+    
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: _getResponsivePadding(screenWidth)),
       child: Row(
         children: [
           Container(
@@ -633,13 +713,13 @@ class _LoginScreenState extends State<LoginScreen> {
               size: 16,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: _getResponsivePadding(screenWidth)),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
                 color: AppColors.white,
-                fontSize: 16,
+                fontSize: fontSize,
               ),
             ),
           ),
@@ -648,7 +728,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildStatItem(String number, String label) {
+  Widget _buildStatItem(String number, String label, double screenWidth) {
+    final fontSize = _getResponsiveFontSize(screenWidth, 24);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -656,7 +738,7 @@ class _LoginScreenState extends State<LoginScreen> {
           number,
           style: TextStyle(
             color: AppColors.white,
-            fontSize: 24,
+            fontSize: fontSize,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -664,7 +746,7 @@ class _LoginScreenState extends State<LoginScreen> {
           label,
           style: TextStyle(
             color: AppColors.white.withOpacity(0.8),
-            fontSize: 14,
+            fontSize: fontSize - 10,
           ),
         ),
       ],

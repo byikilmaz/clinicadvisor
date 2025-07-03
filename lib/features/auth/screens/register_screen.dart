@@ -77,27 +77,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  // Responsive breakpoints
+  bool _isMobile(double width) => width < 768;
+  bool _isTablet(double width) => width >= 768 && width < 1024;
+  bool _isDesktop(double width) => width >= 1024 && width < 1440;
+  bool _isLargeDesktop(double width) => width >= 1440;
+
+  // Responsive values
+  double _getResponsivePadding(double width) {
+    if (_isMobile(width)) return 16;
+    if (_isTablet(width)) return 24;
+    if (_isDesktop(width)) return 32;
+    return 48; // Large desktop
+  }
+
+  double _getResponsiveFontSize(double width, double baseFontSize) {
+    if (_isMobile(width)) return baseFontSize;
+    if (_isTablet(width)) return baseFontSize * 1.1;
+    if (_isDesktop(width)) return baseFontSize * 1.2;
+    return baseFontSize * 1.3; // Large desktop
+  }
+
+  double _getFormMaxWidth(double width) {
+    if (_isMobile(width)) return double.infinity;
+    if (_isTablet(width)) return 450;
+    if (_isDesktop(width)) return 500;
+    return 550; // Large desktop
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 768;
     
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
-        child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
+        child: _isMobile(screenWidth) 
+            ? _buildMobileLayout(screenWidth) 
+            : _buildDesktopLayout(screenWidth),
       ),
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    
     return SingleChildScrollView(
       child: Column(
         children: [
           // Header with close button
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             child: Row(
               children: [
                 IconButton(
@@ -108,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'ClinicAdvisor',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: _getResponsiveFontSize(screenWidth, 18),
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
@@ -121,7 +152,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           
           // Hero Section
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: EdgeInsets.symmetric(
+              horizontal: padding, 
+              vertical: padding * 1.5,
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -136,36 +170,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Icon(
                   Icons.person_add,
-                  size: 60,
+                  size: _getResponsiveFontSize(screenWidth, 60),
                   color: AppColors.white,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: padding),
                 Text(
                   'Hemen Başlayın!',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: _getResponsiveFontSize(screenWidth, 28),
                     fontWeight: FontWeight.bold,
                     color: AppColors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: padding / 2),
                 Text(
                   'Ücretsiz hesap oluşturun ve en iyi sağlık hizmetlerine ulaşın',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getResponsiveFontSize(screenWidth, 16),
                     color: AppColors.white.withOpacity(0.9),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: padding),
                 
                 // Benefits
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Wrap(
+                  spacing: padding / 2,
+                  runSpacing: padding / 2,
                   children: [
-                    _buildFeatureBadge(Icons.search, 'Kolay Arama'),
-                    _buildFeatureBadge(Icons.compare, 'Fiyat Karşılaştır'),
-                    _buildFeatureBadge(Icons.star, 'Güvenilir'),
+                    _buildFeatureBadge(Icons.search, 'Kolay Arama', screenWidth),
+                    _buildFeatureBadge(Icons.compare, 'Fiyat Karşılaştır', screenWidth),
+                    _buildFeatureBadge(Icons.star, 'Güvenilir', screenWidth),
                   ],
                 ),
               ],
@@ -174,138 +209,176 @@ class _RegisterScreenState extends State<RegisterScreen> {
           
           // Form Section
           Container(
-            padding: const EdgeInsets.all(24),
-            child: _buildRegisterForm(),
+            padding: EdgeInsets.all(padding),
+            constraints: BoxConstraints(
+              maxWidth: _getFormMaxWidth(screenWidth),
+            ),
+            child: _buildRegisterForm(screenWidth),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        // Left side - Visual content
-        Expanded(
-          flex: 3,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.secondary,
-                  AppColors.accent,
-                ],
-              ),
+  Widget _buildDesktopLayout(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    final isUltraWide = _isLargeDesktop(screenWidth);
+    
+    return Center(
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: isUltraWide ? 1600 : 1200,
+          maxHeight: 900,
+        ),
+        margin: EdgeInsets.symmetric(
+          horizontal: padding,
+          vertical: padding / 2,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(48),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.person_add,
-                    size: 80,
-                    color: AppColors.white,
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'Sağlık Yolculuğunuza\nBaşlayın',
-                    style: TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Ücretsiz hesabınızı oluşturun ve binlerce klinik arasından size en uygun olanı bulun. Fiyatları karşılaştırın, yorumları okuyun ve güvenle randevu alın.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: AppColors.white.withOpacity(0.9),
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  
-                  // Why choose us
-                  Column(
-                    children: [
-                      _buildFeature(Icons.shield_outlined, 'Güvenli ve Hızlı', 'SSL şifrelemesi ile korunan hesap bilgileriniz'),
-                      _buildFeature(Icons.verified_user, 'Doğrulanmış Klinikler', 'Sadece lisanslı ve güvenilir sağlık kuruluşları'),
-                      _buildFeature(Icons.price_check, 'Şeffaf Fiyatlar', 'Gizli maliyet yok, net fiyat bilgileri'),
-                      _buildFeature(Icons.support_agent, '7/24 Destek', 'Her zaman yanınızdayız, yardım için buradayız'),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: [
+            // Left side - Visual content
+            Expanded(
+              flex: _isTablet(screenWidth) ? 1 : 3,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.secondary,
+                      AppColors.accent,
                     ],
                   ),
-                  
-                  const SizedBox(height: 48),
-                  
-                  // Success stats
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        _buildSuccessStat('98%', 'Memnuniyet'),
-                        const SizedBox(width: 32),
-                        _buildSuccessStat('24sa', 'Ortalama Yanıt'),
-                        const SizedBox(width: 32),
-                        _buildSuccessStat('50K+', 'Mutlu Hasta'),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(padding),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.person_add,
+                        size: _getResponsiveFontSize(screenWidth, 80),
+                        color: AppColors.white,
+                      ),
+                      SizedBox(height: padding),
+                      Text(
+                        'Sağlık Yolculuğunuza\nBaşlayın',
+                        style: TextStyle(
+                          fontSize: _getResponsiveFontSize(screenWidth, 42),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                          height: 1.2,
+                        ),
+                      ),
+                      SizedBox(height: padding / 1.5),
+                      Text(
+                        'Ücretsiz hesabınızı oluşturun ve binlerce klinik arasından size en uygun olanı bulun. Fiyatları karşılaştırın, yorumları okuyun ve güvenle randevu alın.',
+                        style: TextStyle(
+                          fontSize: _getResponsiveFontSize(screenWidth, 18),
+                          color: AppColors.white.withOpacity(0.9),
+                          height: 1.6,
+                        ),
+                      ),
+                      SizedBox(height: padding * 1.5),
+                      
+                      // Why choose us - Hide on tablet for space
+                      if (!_isTablet(screenWidth)) ...[
+                        Column(
+                          children: [
+                            _buildFeature(Icons.shield_outlined, 'Güvenli ve Hızlı', 'SSL şifrelemesi ile korunan hesap bilgileriniz', screenWidth),
+                            _buildFeature(Icons.verified_user, 'Doğrulanmış Klinikler', 'Sadece lisanslı ve güvenilir sağlık kuruluşları', screenWidth),
+                            _buildFeature(Icons.price_check, 'Şeffaf Fiyatlar', 'Gizli maliyet yok, net fiyat bilgileri', screenWidth),
+                            _buildFeature(Icons.support_agent, '7/24 Destek', 'Her zaman yanınızdayız, yardım için buradayız', screenWidth),
+                          ],
+                        ),
+                        SizedBox(height: padding * 1.5),
                       ],
-                    ),
+                      
+                      // Success stats
+                      Container(
+                        padding: EdgeInsets.all(padding / 1.5),
+                        decoration: BoxDecoration(
+                          color: AppColors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Wrap(
+                          spacing: padding,
+                          runSpacing: padding / 2,
+                          children: [
+                            _buildSuccessStat('98%', 'Memnuniyet', screenWidth),
+                            _buildSuccessStat('24sa', 'Ortalama Yanıt', screenWidth),
+                            _buildSuccessStat('50K+', 'Mutlu Hasta', screenWidth),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        
-        // Right side - Register form
-        Expanded(
-          flex: 2,
-          child: Container(
-            color: AppColors.white,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(48),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Hesap Oluşturun',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Birkaç dakikada ücretsiz hesabınızı oluşturun',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 48),
-                    _buildRegisterForm(),
-                  ],
                 ),
               ),
             ),
-          ),
+            
+            // Right side - Register form
+            Expanded(
+              flex: _isTablet(screenWidth) ? 1 : 2,
+              child: Container(
+                color: AppColors.white,
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(padding),
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: _getFormMaxWidth(screenWidth),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Hesap Oluşturun',
+                            style: TextStyle(
+                              fontSize: _getResponsiveFontSize(screenWidth, 32),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          SizedBox(height: padding / 4),
+                          Text(
+                            'Birkaç dakikada ücretsiz hesabınızı oluşturun',
+                            style: TextStyle(
+                              fontSize: _getResponsiveFontSize(screenWidth, 16),
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          SizedBox(height: padding * 1.5),
+                          _buildRegisterForm(screenWidth),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildRegisterForm() {
+  Widget _buildRegisterForm(double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    final fontSize = _getResponsiveFontSize(screenWidth, 16);
+    
     return Form(
       key: _formKey,
       child: Column(
@@ -324,6 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _fullNameController,
               textInputAction: TextInputAction.next,
               textCapitalization: TextCapitalization.words,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Ad Soyad',
                 hintText: 'Ahmet Yılmaz',
@@ -341,13 +415,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -362,7 +436,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: padding),
           
           // Email field
           Container(
@@ -377,6 +451,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Email Adresi',
                 hintText: 'ornek@email.com',
@@ -394,13 +469,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -415,7 +490,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: padding),
           
           // Phone field
           Container(
@@ -430,6 +505,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Telefon Numarası',
                 hintText: '0555 123 45 67',
@@ -447,13 +523,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -468,7 +544,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: padding),
           
           // Password field
           Container(
@@ -483,6 +559,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               obscureText: _obscurePassword,
               textInputAction: TextInputAction.next,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Şifre',
                 hintText: 'En az 6 karakter',
@@ -509,13 +586,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -530,7 +607,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: padding),
           
           // Confirm password field
           Container(
@@ -545,6 +622,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
               textInputAction: TextInputAction.done,
+              style: TextStyle(fontSize: fontSize),
               decoration: InputDecoration(
                 labelText: 'Şifre Tekrar',
                 hintText: 'Şifrenizi tekrar girin',
@@ -571,13 +649,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
+                contentPadding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 20,
+                  vertical: _isMobile(screenWidth) ? 20 : 24,
                 ),
                 labelStyle: TextStyle(
                   color: AppColors.grey,
-                  fontSize: 16,
+                  fontSize: fontSize,
                 ),
               ),
               validator: (value) {
@@ -593,11 +671,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: padding),
           
           // Terms checkbox
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: AppColors.grey.withOpacity(0.05),
               borderRadius: BorderRadius.circular(12),
@@ -623,7 +701,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       text: TextSpan(
                         style: TextStyle(
                           color: AppColors.grey,
-                          fontSize: 14,
+                          fontSize: fontSize - 2,
                         ),
                         children: [
                           TextSpan(text: 'Hesap oluşturarak '),
@@ -652,11 +730,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding * 1.5),
           
           // Register button
           Container(
-            height: 56,
+            height: _isMobile(screenWidth) ? 56 : 64,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [AppColors.secondary, AppColors.accent],
@@ -692,14 +770,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'Hesap Oluştur',
                       style: TextStyle(
                         color: AppColors.white,
-                        fontSize: 18,
+                        fontSize: _getResponsiveFontSize(screenWidth, 18),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
             ),
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding),
           
           // Divider
           Row(
@@ -710,12 +788,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: padding),
                 child: Text(
                   'veya',
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 14,
+                    fontSize: fontSize - 2,
                   ),
                 ),
               ),
@@ -727,11 +805,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
           
-          const SizedBox(height: 32),
+          SizedBox(height: padding),
           
           // Login link
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: AppColors.grey.withOpacity(0.05),
               borderRadius: BorderRadius.circular(16),
@@ -746,7 +824,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   'Zaten hesabınız var mı? ',
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 16,
+                    fontSize: fontSize,
                   ),
                 ),
                 GestureDetector(
@@ -761,7 +839,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     'Giriş Yapın',
                     style: TextStyle(
                       color: AppColors.primary,
-                      fontSize: 16,
+                      fontSize: fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -770,11 +848,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: padding),
           
           // Security note
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             decoration: BoxDecoration(
               color: AppColors.success.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
@@ -786,13 +864,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: AppColors.success,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: padding / 2),
                 Expanded(
                   child: Text(
                     'Bilgileriniz SSL şifrelemesi ile korunmaktadır',
                     style: TextStyle(
                       color: AppColors.success,
-                      fontSize: 12,
+                      fontSize: fontSize - 4,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -805,9 +883,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildFeatureBadge(IconData icon, String label) {
+  Widget _buildFeatureBadge(IconData icon, String label, double screenWidth) {
+    final fontSize = _getResponsiveFontSize(screenWidth, 10);
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: _isMobile(screenWidth) ? 12 : 16, 
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
         color: AppColors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(16),
@@ -824,7 +907,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             label,
             style: TextStyle(
               color: AppColors.white,
-              fontSize: 10,
+              fontSize: fontSize,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -833,9 +916,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildFeature(IconData icon, String title, String description) {
+  Widget _buildFeature(IconData icon, String title, String description, double screenWidth) {
+    final padding = _getResponsivePadding(screenWidth);
+    final fontSize = _getResponsiveFontSize(screenWidth, 16);
+    
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: padding),
       child: Row(
         children: [
           Container(
@@ -851,7 +937,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               size: 24,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: padding),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -860,7 +946,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   title,
                   style: TextStyle(
                     color: AppColors.white,
-                    fontSize: 16,
+                    fontSize: fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -869,7 +955,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   description,
                   style: TextStyle(
                     color: AppColors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: fontSize - 2,
                   ),
                 ),
               ],
@@ -880,14 +966,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildSuccessStat(String number, String label) {
+  Widget _buildSuccessStat(String number, String label, double screenWidth) {
+    final fontSize = _getResponsiveFontSize(screenWidth, 20);
+    
     return Column(
       children: [
         Text(
           number,
           style: TextStyle(
             color: AppColors.white,
-            fontSize: 20,
+            fontSize: fontSize,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -895,7 +983,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           label,
           style: TextStyle(
             color: AppColors.white.withOpacity(0.8),
-            fontSize: 12,
+            fontSize: fontSize - 8,
           ),
         ),
       ],
