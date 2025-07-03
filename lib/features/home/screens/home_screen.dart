@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                     
                     SizedBox(
-                      height: 250,
+                      height: 320,
                       child: popularClinics.isEmpty
                           ? Center(
                               child: Text(l10n.noResultsFound),
@@ -207,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                     
                     SizedBox(
-                      height: 200,
+                      height: 240,
                       child: popularTreatments.isEmpty
                           ? Center(
                               child: Text(l10n.noResultsFound),

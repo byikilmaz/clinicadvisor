@@ -9,10 +9,21 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection('clinics')
-          .where('isActive', isEqualTo: true)
-          .orderBy('rating', descending: true)
           .limit(10)
           .get();
+      
+      if (snapshot.docs.isEmpty) {
+        await addSampleData();
+        final newSnapshot = await _firestore
+            .collection('clinics')
+            .limit(10)
+            .get();
+        return newSnapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList();
+      }
       
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -30,10 +41,21 @@ class FirestoreService {
     try {
       final snapshot = await _firestore
           .collection('treatments')
-          .where('isActive', isEqualTo: true)
-          .orderBy('popularity', descending: true)
           .limit(10)
           .get();
+      
+      if (snapshot.docs.isEmpty) {
+        await addSampleData();
+        final newSnapshot = await _firestore
+            .collection('treatments')
+            .limit(10)
+            .get();
+        return newSnapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList();
+      }
       
       return snapshot.docs.map((doc) {
         final data = doc.data();
