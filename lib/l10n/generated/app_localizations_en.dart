@@ -103,4 +103,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAll => 'View All';
+
+  @override
+  String get getQuote => 'Get Quote';
+
+  @override
+  String get requiredLogin => 'Login Required';
+
+  @override
+  String get loginPrompt =>
+      'You need to login to access this feature. If you don\'t have an account, you can register now.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get forgotPassword => 'Forgot Password';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get acceptTerms => 'I accept the terms of use and privacy policy';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get welcomeBack => 'Welcome Back';
+
+  @override
+  String get loginToAccount => 'Login to your account';
+
+  @override
+  String get treatment => 'Treatment';
+
+  @override
+  String get averagePrice => 'Average Price';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get popularity => 'Popularity';
+
+  @override
+  String get clinicCount => 'Clinic Count';
+
+  @override
+  String get aboutTreatment => 'About Treatment';
+
+  @override
+  String get treatmentFeatures => 'Treatment Features';
+
+  @override
+  String get treatmentProcess => 'Treatment Process';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../features/treatments/screens/treatment_detail_screen.dart';
 
 class TreatmentCard extends StatelessWidget {
   final Map<String, dynamic> treatment;
@@ -186,7 +187,13 @@ class TreatmentCard extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: View treatment details
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TreatmentDetailScreen(
+                              treatment: treatment,
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 8),

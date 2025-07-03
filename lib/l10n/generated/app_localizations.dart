@@ -289,6 +289,138 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tümünü Gör'**
   String get viewAll;
+
+  /// No description provided for @getQuote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Teklif Al'**
+  String get getQuote;
+
+  /// No description provided for @requiredLogin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş Gerekli'**
+  String get requiredLogin;
+
+  /// No description provided for @loginPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özelliği kullanmak için giriş yapmanız gerekiyor. Hesabınız yoksa hemen kaydolabilirsiniz.'**
+  String get loginPrompt;
+
+  /// No description provided for @cancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal'**
+  String get cancel;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifremi Unuttum'**
+  String get forgotPassword;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabınız yok mu?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaten hesabınız var mı?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @fullName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad Soyad'**
+  String get fullName;
+
+  /// No description provided for @phone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Telefon'**
+  String get phone;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifre Tekrar'**
+  String get confirmPassword;
+
+  /// No description provided for @acceptTerms.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım koşullarını ve gizlilik politikasını kabul ediyorum'**
+  String get acceptTerms;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap Oluştur'**
+  String get createAccount;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hoş Geldiniz'**
+  String get welcomeBack;
+
+  /// No description provided for @loginToAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabınıza giriş yapın'**
+  String get loginToAccount;
+
+  /// No description provided for @treatment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tedavi'**
+  String get treatment;
+
+  /// No description provided for @averagePrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama Fiyat'**
+  String get averagePrice;
+
+  /// No description provided for @duration.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süre'**
+  String get duration;
+
+  /// No description provided for @popularity.
+  ///
+  /// In tr, this message translates to:
+  /// **'Popülerlik'**
+  String get popularity;
+
+  /// No description provided for @clinicCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Klinik Sayısı'**
+  String get clinicCount;
+
+  /// No description provided for @aboutTreatment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tedavi Hakkında'**
+  String get aboutTreatment;
+
+  /// No description provided for @treatmentFeatures.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tedavi Özellikleri'**
+  String get treatmentFeatures;
+
+  /// No description provided for @treatmentProcess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tedavi Süreci'**
+  String get treatmentProcess;
 }
 
 class _AppLocalizationsDelegate

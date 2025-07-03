@@ -1,14 +1,98 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../services/auth_service.dart';
+import '../../features/auth/screens/login_screen.dart';
 
-class ClinicCard extends StatelessWidget {
+class ClinicCard extends StatefulWidget {
   final Map<String, dynamic> clinic;
 
   const ClinicCard({
     super.key,
     required this.clinic,
   });
+
+  @override
+  State<ClinicCard> createState() => _ClinicCardState();
+}
+
+class _ClinicCardState extends State<ClinicCard> {
+  final AuthService _authService = AuthService();
+  
+  Future<void> _requireAuthentication(String action) async {
+    if (!_authService.isLoggedIn) {
+      // Show login required dialog
+      final shouldLogin = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('Giriş Gerekli'),
+          content: Text(
+            '$action için giriş yapmanız gerekiyor. Hesabınız yoksa hemen kaydolabilirsiniz.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('İptal'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Giriş Yap'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldLogin == true) {
+        // Navigate to login screen
+        final result = await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+        
+        if (result == true) {
+          // User logged in successfully, proceed with the action
+          _performAction(action);
+        }
+      }
+    } else {
+      // User is already logged in
+      _performAction(action);
+    }
+  }
+
+  void _performAction(String action) {
+    switch (action) {
+      case 'Randevu Al':
+        _bookAppointment();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _bookAppointment() {
+    // TODO: Implement appointment booking
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Randevu alma sayfasına yönlendiriliyorsunuz...'),
+        backgroundColor: AppColors.success,
+      ),
+    );
+  }
+
+  void _viewDetails() {
+    // TODO: Implement clinic details page
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Klinik detayları sayfasına yönlendiriliyorsunuz...'),
+        backgroundColor: AppColors.primary,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +134,7 @@ class ClinicCard extends StatelessWidget {
                       ),
                     ),
                     // Verified badge
-                    if (clinic['isVerified'] == true)
+                    if (widget.clinic['isVerified'] == true)
                       Positioned(
                         top: 12,
                         right: 12,
@@ -80,7 +164,7 @@ class ClinicCard extends StatelessWidget {
                 children: [
                   // Klinik adı
                   Text(
-                    clinic['name'] ?? 'Bilinmeyen Klinik',
+                    widget.clinic['name'] ?? 'Bilinmeyen Klinik',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -92,7 +176,7 @@ class ClinicCard extends StatelessWidget {
                   
                   // Uzmanlık alanı
                   Text(
-                    clinic['specialty'] ?? 'Genel',
+                    widget.clinic['specialty'] ?? 'Genel',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.grey,
                     ),
@@ -111,7 +195,7 @@ class ClinicCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          clinic['location'] ?? 'Konum belirtilmemiş',
+                          widget.clinic['location'] ?? 'Konum belirtilmemiş',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.grey,
                           ),
@@ -137,14 +221,14 @@ class ClinicCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${clinic['rating'] ?? 0.0}',
+                            '${widget.clinic['rating'] ?? 0.0}',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '(${clinic['reviewCount'] ?? 0})',
+                            '(${widget.clinic['reviewCount'] ?? 0})',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.grey,
                             ),
@@ -152,7 +236,7 @@ class ClinicCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        clinic['priceRange'] ?? '₺₺₺',
+                        widget.clinic['priceRange'] ?? '₺₺₺',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -168,9 +252,7 @@ class ClinicCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () {
-                            // TODO: View details
-                          },
+                          onPressed: _viewDetails,
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                           ),
@@ -183,9 +265,7 @@ class ClinicCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: Book appointment
-                          },
+                          onPressed: () => _requireAuthentication('Randevu Al'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                           ),

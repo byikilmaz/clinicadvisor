@@ -103,4 +103,72 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get viewAll => 'Tümünü Gör';
+
+  @override
+  String get getQuote => 'Teklif Al';
+
+  @override
+  String get requiredLogin => 'Giriş Gerekli';
+
+  @override
+  String get loginPrompt =>
+      'Bu özelliği kullanmak için giriş yapmanız gerekiyor. Hesabınız yoksa hemen kaydolabilirsiniz.';
+
+  @override
+  String get cancel => 'İptal';
+
+  @override
+  String get forgotPassword => 'Şifremi Unuttum';
+
+  @override
+  String get dontHaveAccount => 'Hesabınız yok mu?';
+
+  @override
+  String get alreadyHaveAccount => 'Zaten hesabınız var mı?';
+
+  @override
+  String get fullName => 'Ad Soyad';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get confirmPassword => 'Şifre Tekrar';
+
+  @override
+  String get acceptTerms =>
+      'Kullanım koşullarını ve gizlilik politikasını kabul ediyorum';
+
+  @override
+  String get createAccount => 'Hesap Oluştur';
+
+  @override
+  String get welcomeBack => 'Hoş Geldiniz';
+
+  @override
+  String get loginToAccount => 'Hesabınıza giriş yapın';
+
+  @override
+  String get treatment => 'Tedavi';
+
+  @override
+  String get averagePrice => 'Ortalama Fiyat';
+
+  @override
+  String get duration => 'Süre';
+
+  @override
+  String get popularity => 'Popülerlik';
+
+  @override
+  String get clinicCount => 'Klinik Sayısı';
+
+  @override
+  String get aboutTreatment => 'Tedavi Hakkında';
+
+  @override
+  String get treatmentFeatures => 'Tedavi Özellikleri';
+
+  @override
+  String get treatmentProcess => 'Tedavi Süreci';
 }
