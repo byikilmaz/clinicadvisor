@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       
       if (mounted) {
-        Navigator.of(context).pop(true); // Return true to indicate successful login
+        Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
@@ -94,224 +94,580 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenWidth < 768;
     
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.primary),
+      body: SafeArea(
+        child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            
-            // Logo and title
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.local_hospital,
-                      color: AppColors.white,
-                      size: 40,
-                    ),
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Header with close button
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                const Spacer(),
+                Text(
+                  'ClinicAdvisor',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.appTitle,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                ),
+                const Spacer(),
+                const SizedBox(width: 48), // Balance the close button
+              ],
+            ),
+          ),
+          
+          // Hero Section
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.secondary,
                 ],
               ),
             ),
-            
-            const SizedBox(height: 40),
-            
-            // Welcome text
-            Text(
-              'Hoş Geldiniz',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+            child: Column(
+              children: [
+                Icon(
+                  Icons.local_hospital,
+                  size: 60,
+                  color: AppColors.white,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Hoş Geldiniz!',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Binlerce klinik arasından size en uygun olanı bulmaya devam edin',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.white.withOpacity(0.9),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Trust indicators
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildTrustBadge('500+', 'Klinik'),
+                    _buildTrustBadge('50K+', 'Hasta'),
+                    _buildTrustBadge('4.8★', 'Puan'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          // Form Section
+          Container(
+            padding: const EdgeInsets.all(24),
+            child: _buildLoginForm(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    return Row(
+      children: [
+        // Left side - Visual content
+        Expanded(
+          flex: 3,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.secondary,
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Hesabınıza giriş yapın',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.grey,
-              ),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Login form
-            Form(
-              key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(48),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Email field
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: l10n.email,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email adresi gerekli';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Geçerli bir email adresi girin';
-                      }
-                      return null;
-                    },
+                  Icon(
+                    Icons.local_hospital,
+                    size: 80,
+                    color: AppColors.white,
                   ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Password field
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: l10n.password,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Şifre gerekli';
-                      }
-                      if (value.length < 6) {
-                        return 'Şifre en az 6 karakter olmalı';
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: (_) => _login(),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // Forgot password
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _forgotPassword,
-                      child: Text(
-                        'Şifremi Unuttum',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Login button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                              ),
-                            )
-                          : Text(
-                              l10n.login,
-                              style: const TextStyle(
-                                color: AppColors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  ),
-                  
                   const SizedBox(height: 32),
+                  Text(
+                    'Türkiye\'nin En Büyük\nSağlık Pazaryeri',
+                    style: TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Binlerce klinik arasından size en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppColors.white.withOpacity(0.9),
+                      height: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
                   
-                  // Register link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  // Benefits
+                  Column(
                     children: [
-                      Text(
-                        'Hesabınız yok mu? ',
-                        style: TextStyle(color: AppColors.grey),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          l10n.register,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      _buildBenefit('Güvenilir klinikler ve doktorlar'),
+                      _buildBenefit('Şeffaf fiyat karşılaştırması'),
+                      _buildBenefit('Kolay randevu alma sistemi'),
+                      _buildBenefit('Gerçek hasta yorumları'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 48),
+                  
+                  // Stats
+                  Row(
+                    children: [
+                      _buildStatItem('500+', 'Klinik'),
+                      const SizedBox(width: 32),
+                      _buildStatItem('1000+', 'Doktor'),
+                      const SizedBox(width: 32),
+                      _buildStatItem('50K+', 'Hasta'),
                     ],
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
+        
+        // Right side - Login form
+        Expanded(
+          flex: 2,
+          child: Container(
+            color: AppColors.white,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(48),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Giriş Yapın',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Hesabınıza giriş yaparak devam edin',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    _buildLoginForm(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginForm() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Email field
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.grey.withOpacity(0.1),
+              ),
+            ),
+            child: TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                labelText: 'Email Adresi',
+                hintText: 'ornek@email.com',
+                prefixIcon: Container(
+                  margin: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.email_outlined,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                labelStyle: TextStyle(
+                  color: AppColors.grey,
+                  fontSize: 16,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Email adresi gerekli';
+                }
+                if (!value.contains('@')) {
+                  return 'Geçerli bir email adresi girin';
+                }
+                return null;
+              },
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Password field
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.grey.withOpacity(0.1),
+              ),
+            ),
+            child: TextFormField(
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                labelText: 'Şifre',
+                hintText: 'En az 6 karakter',
+                prefixIcon: Container(
+                  margin: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.lock_outline,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() => _obscurePassword = !_obscurePassword);
+                  },
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                labelStyle: TextStyle(
+                  color: AppColors.grey,
+                  fontSize: 16,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Şifre gerekli';
+                }
+                if (value.length < 6) {
+                  return 'Şifre en az 6 karakter olmalı';
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _login(),
+            ),
+          ),
+          
+          const SizedBox(height: 12),
+          
+          // Forgot password
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _forgotPassword,
+              child: Text(
+                'Şifremi Unuttum',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 32),
+          
+          // Login button
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.secondary],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _login,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                      ),
+                    )
+                  : Text(
+                      'Giriş Yap',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          ),
+          
+          const SizedBox(height: 32),
+          
+          // Divider
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: AppColors.grey.withOpacity(0.3),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'veya',
+                  style: TextStyle(
+                    color: AppColors.grey,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: AppColors.grey.withOpacity(0.3),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 32),
+          
+          // Register link
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.grey.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.grey.withOpacity(0.1),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Hesabınız yok mu? ',
+                  style: TextStyle(
+                    color: AppColors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Hemen Kaydolun',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Trust indicators at bottom
+          Text(
+            '500+ klinik • 50K+ hasta • 4.8★ ortalama puan',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.grey,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildTrustBadge(String number, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Text(
+            number,
+            style: TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppColors.white.withOpacity(0.8),
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBenefit(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.check,
+              color: AppColors.white,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: AppColors.white,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String number, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          number,
+          style: TextStyle(
+            color: AppColors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: AppColors.white.withOpacity(0.8),
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 } 
