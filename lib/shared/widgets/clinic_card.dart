@@ -97,10 +97,10 @@ class _ClinicCardState extends State<ClinicCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
     
-    return SizedBox(
-      width: 280,
-      child: Card(
+    return Card(
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -282,7 +282,6 @@ class _ClinicCardState extends State<ClinicCard> {
             ),
           ],
         ),
-      ),
     );
   }
 } 

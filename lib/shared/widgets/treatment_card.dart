@@ -14,10 +14,10 @@ class TreatmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
     
-    return SizedBox(
-      width: 250,
-      child: Card(
+    return Card(
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -209,7 +209,6 @@ class TreatmentCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 } 
