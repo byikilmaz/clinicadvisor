@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/clinic_card.dart';
@@ -113,13 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
                               else
                                 TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const LoginScreen(),
-                                      ),
-                                    );
-                                  },
+                                  onPressed: () => context.go('/login'),
                                   child: const Text('Giriş Yap'),
                                 ),
                             ],
@@ -351,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () => context.go('/clinics'),
                                     child: Text('Tümünü Gör'),
                                   ),
                                 ],
@@ -513,7 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () => context.go('/treatments'),
                                     child: Text('Tümünü Gör'),
                                   ),
                                 ],
@@ -718,7 +713,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 alignment: WrapAlignment.center,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () => context.go('/clinics'),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.white,
                                       foregroundColor: AppColors.primary,
@@ -739,7 +734,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   OutlinedButton(
-                                    onPressed: () {},
+                                    onPressed: () => context.go('/treatments'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.white,
                                       side: BorderSide(color: AppColors.white, width: 2),
@@ -841,7 +836,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: 0,
         onTap: (index) {
-          // TODO: Handle navigation
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              context.go('/search');
+              break;
+            case 2:
+              context.go('/appointments');
+              break;
+            case 3:
+              context.go('/profile');
+              break;
+          }
         },
       ),
     );

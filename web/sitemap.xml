@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://clinicadvisor.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Clinics Listing -->
+  <url>
+    <loc>https://clinicadvisor.app/clinics</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Treatments Listing -->
+  <url>
+    <loc>https://clinicadvisor.app/treatments</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Search Page -->
+  <url>
+    <loc>https://clinicadvisor.app/search</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Login Page -->
+  <url>
+    <loc>https://clinicadvisor.app/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Profile Page -->
+  <url>
+    <loc>https://clinicadvisor.app/profile</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+  
+  <!-- Appointments Page -->
+  <url>
+    <loc>https://clinicadvisor.app/appointments</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-04</lastmod>
+  </url>
+
+</urlset> 

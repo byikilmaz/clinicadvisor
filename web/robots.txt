@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Important pages
+Allow: /clinics
+Allow: /treatments
+Allow: /search
+Allow: /login
+
+# Sitemap
+Sitemap: https://clinicadvisor.app/sitemap.xml
+
+# Crawl-delay (be nice to search engines)
+Crawl-delay: 1 

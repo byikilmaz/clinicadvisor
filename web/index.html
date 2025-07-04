@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Base href for Flutter -->
   <base href="$FLUTTER_BASE_HREF">
 
+  <!-- Essential meta tags -->
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="ClinicAdvisor - Sağlık hizmetleri pazaryeri">
-
+  
+  <!-- SEO Meta Tags -->
+  <title>ClinicAdvisor - Türkiye'nin En Büyük Sağlık Pazaryeri</title>
+  <meta name="description" content="Binlerce klinik arasından en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın. Diş hekimliği, estetik, göz hastalıkları ve daha fazlası.">
+  <meta name="keywords" content="klinik, hastane, doktor, randevu, sağlık, tedavi, estetik, diş hekimi, göz doktoru, sağlık hizmetleri, Türkiye">
+  <meta name="author" content="ClinicAdvisor">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://clinicadvisor.app">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://clinicadvisor.app">
+  <meta property="og:title" content="ClinicAdvisor - Türkiye'nin En Büyük Sağlık Pazaryeri">
+  <meta property="og:description" content="Binlerce klinik arasından en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.">
+  <meta property="og:image" content="https://clinicadvisor.app/icons/Icon-512.png">
+  <meta property="og:site_name" content="ClinicAdvisor">
+  <meta property="og:locale" content="tr_TR">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://clinicadvisor.app">
+  <meta property="twitter:title" content="ClinicAdvisor - Türkiye'nin En Büyük Sağlık Pazaryeri">
+  <meta property="twitter:description" content="Binlerce klinik arasından en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.">
+  <meta property="twitter:image" content="https://clinicadvisor.app/icons/Icon-512.png">
+  
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -28,8 +41,39 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="shortcut icon" href="favicon.png">
+  
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ClinicAdvisor",
+    "alternateName": "ClinicAdvisor - Sağlık Pazaryeri",
+    "url": "https://clinicadvisor.app",
+    "description": "Türkiye'nin en büyük sağlık pazaryeri. Binlerce klinik arasından en uygun olanı bulun, fiyatları karşılaştırın ve güvenle randevu alın.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://clinicadvisor.app/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "sameAs": [
+      "https://www.facebook.com/clinicadvisor",
+      "https://www.instagram.com/clinicadvisor",
+      "https://www.linkedin.com/company/clinicadvisor"
+    ]
+  }
+  </script>
+  
+  <!-- Google Analytics 4 (Replace GA_MEASUREMENT_ID with your actual ID) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+  </script>
 
-  <title>ClinicAdvisor - Sağlık Hizmetleri Pazaryeri</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
