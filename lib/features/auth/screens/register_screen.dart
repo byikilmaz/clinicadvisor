@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/services/auth_service.dart';
@@ -13,7 +14,8 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,7 +29,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
@@ -54,7 +57,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await _authService.registerWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        fullName: _fullNameController.text.trim(),
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
         phone: _phoneController.text.trim(),
       );
       
@@ -384,56 +388,119 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Full name field
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.grey.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.grey.withOpacity(0.1),
-              ),
-            ),
-            child: TextFormField(
-              controller: _fullNameController,
-              textInputAction: TextInputAction.next,
-              textCapitalization: TextCapitalization.words,
-              style: TextStyle(fontSize: fontSize),
-              decoration: InputDecoration(
-                labelText: 'Ad Soyad',
-                hintText: 'Ahmet Yılmaz',
-                prefixIcon: Container(
-                  margin: const EdgeInsets.all(12),
-                  padding: const EdgeInsets.all(8),
+          // First name and last name fields in row
+          Row(
+            children: [
+              // First name field
+              Expanded(
+                child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.secondary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.grey.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.grey.withOpacity(0.1),
+                    ),
                   ),
-                  child: Icon(
-                    Icons.person_outline,
-                    color: AppColors.secondary,
-                    size: 20,
+                  child: TextFormField(
+                    controller: _firstNameController,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.words,
+                    style: TextStyle(fontSize: fontSize),
+                    decoration: InputDecoration(
+                      labelText: 'Ad',
+                      hintText: 'Ahmet',
+                      prefixIcon: Container(
+                        margin: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.person_outline,
+                          color: AppColors.secondary,
+                          size: 20,
+                        ),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: _isMobile(screenWidth) ? 20 : 24,
+                      ),
+                      labelStyle: TextStyle(
+                        color: AppColors.grey,
+                        fontSize: fontSize,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ad gerekli';
+                      }
+                      if (value.trim().length < 2) {
+                        return 'En az 2 karakter';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: _isMobile(screenWidth) ? 20 : 24,
-                ),
-                labelStyle: TextStyle(
-                  color: AppColors.grey,
-                  fontSize: fontSize,
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Ad soyad gerekli';
-                }
-                if (value.trim().length < 2) {
-                  return 'Ad soyad en az 2 karakter olmalı';
-                }
-                return null;
-              },
-            ),
+              
+              SizedBox(width: padding),
+              
+              // Last name field
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.grey.withOpacity(0.1),
+                    ),
+                  ),
+                  child: TextFormField(
+                    controller: _lastNameController,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.words,
+                    style: TextStyle(fontSize: fontSize),
+                    decoration: InputDecoration(
+                      labelText: 'Soyad',
+                      hintText: 'Yılmaz',
+                      prefixIcon: Container(
+                        margin: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.person_outline,
+                          color: AppColors.accent,
+                          size: 20,
+                        ),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: _isMobile(screenWidth) ? 20 : 24,
+                      ),
+                      labelStyle: TextStyle(
+                        color: AppColors.grey,
+                        fontSize: fontSize,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Soyad gerekli';
+                      }
+                      if (value.trim().length < 2) {
+                        return 'En az 2 karakter';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
           
           SizedBox(height: padding),

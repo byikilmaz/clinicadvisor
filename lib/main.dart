@@ -9,9 +9,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   try {
+    print('🚀 App starting...');
     await FirebaseConfig.initialize();
+    print('✅ Firebase ready, starting app...');
   } catch (e) {
-    debugPrint('Firebase initialization error: $e');
+    print('🚨 Firebase initialization error: $e');
+    // Continue with app even if Firebase fails
   }
   
   runApp(const ClinicAdvisorApp());

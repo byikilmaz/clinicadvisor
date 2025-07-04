@@ -18,32 +18,48 @@ class AuthService {
   Future<User?> registerWithEmailAndPassword({
     required String email,
     required String password,
-    required String fullName,
+    required String firstName,
+    required String lastName,
     required String phone,
   }) async {
     try {
+      print('🔥 Firebase Auth: Registering user with email: $email');
+      
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
+      print('🔥 Firebase Auth: User created successfully, UID: ${credential.user?.uid}');
+
       if (credential.user != null) {
+        print('🔥 Firestore: Saving user data...');
+        
         // Save user data to Firestore
         await _firestore.collection('users').doc(credential.user!.uid).set({
-          'fullName': fullName,
+          'firstName': firstName,
+          'lastName': lastName,
+          'fullName': '$firstName $lastName', // Combined for display
           'email': email,
           'phone': phone,
           'createdAt': FieldValue.serverTimestamp(),
           'isActive': true,
         });
 
+        print('🔥 Firestore: User data saved successfully');
+
         // Update display name
-        await credential.user!.updateDisplayName(fullName);
+        await credential.user!.updateDisplayName('$firstName $lastName');
+        print('🔥 Firebase Auth: Display name updated');
       }
 
       return credential.user;
     } on FirebaseAuthException catch (e) {
+      print('🚨 Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
+    } catch (e) {
+      print('🚨 General Error: $e');
+      throw 'Kayıt işlemi sırasında beklenmeyen bir hata oluştu: $e';
     }
   }
 
